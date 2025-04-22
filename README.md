@@ -2,7 +2,7 @@
 
 ⏳ The code will be released soon. Stay tuned! 👀
 
-[Paper]() | [Project page](https://pmh9960.github.io/research/SphereDiff/)
+[Paper](https://arxiv.org/abs/2504.14396) | [Project page](https://pmh9960.github.io/research/SphereDiff/)
 
 > [Minho Park\*](https://pmh9960.github.io/), [Taewoong Kang\*](https://keh0t0.github.io/), [Jooyeol Yun](https://yeolj00.github.io/), [Sungwon Hwang](https://deepshwang.github.io/) and [Jaegul Choo](https://sites.google.com/site/jaegulchoo/)  
 > Korea Advanced Institute of Science and Technology (KAIST)  
