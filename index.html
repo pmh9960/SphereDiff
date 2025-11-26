@@ -1,339 +1,959 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <meta name="description"
+        content="SphereDiff: Tuning-free Omnidirectional Panoramic Image and Video Generation via Spherical Latent Representation.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SphereDiff</title>
     <link rel="icon" type="image/x-icon" href="../common/figs/fevicon_davian.png">
 
-    <meta property="og:title" content="SphereDiff">
-    <meta property="og:description"
-        content="SphereDiff: Tuning-free Omnidirectional Panoramic Image and Video Generation via Spherical Latent Representation.">
-    <meta property="og:image" content="https://pmh9960.github.io/research/SphereDiff/figs/qualis_t2i/snow_mountain.png">
-    <meta property="og:url" content="https://pmh9960.github.io/research/SphereDiff">
-    <meta property="og:type" content="website">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+
+    <style>
+        .strong_acg {
+            color: rgb(0, 90, 190);
+            font-weight: 700
+        }
+
+        .strong_ic {
+            color: rgb(230, 34, 46);
+            font-weight: 700
+        }
+
+        .media-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 16px;
+            max-width: 1200px;
+            margin: 20px auto 0 auto;
+            padding: 0 8px;
+            width: 100%;
+        }
+
+        .media-cell {
+            flex: 1;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .media-cell img,
+        .media-cell video {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            image-rendering: auto;
+            border-radius: 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 반응형 대응 */
+        @media screen and (max-width: 768px) {
+            .media-row {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .media-cell {
+                width: 100% !important;
+            }
+        }
+
+        .publication-links .button {
+            text-transform: none;
+        }
+
+        .concept-overview-caption p {
+            width: 90%;
+        }
+
+        .concept-overview {
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        @media screen and (max-width: 768px) {
+            .concept-overview {
+                width: 100%;
+            }
+
+            .concept-overview-caption p {
+                width: 100%;
+            }
+        }
+
+        /* Qualitative Comparison Styles */
+        .comparison-section {
+            margin: 3rem 0;
+        }
+
+        .comparison-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            align-items: stretch;
+        }
+
+        .comparison-panel {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            /* position: sticky; */
+            /* top: 0rem; */
+        }
+
+        .comparison-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .comparison-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .comparison-item h4 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .comparison-item video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .method-label {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            width: fit-content;
+        }
+
+        .method-baseline {
+            background: rgb(240, 240, 240);
+            color: #4a4a4a;
+            border: 1px solid #4a4a4a;
+        }
+
+        .method-ensemble {
+            background: #fff6dd;
+            color: #d7a309;
+            border: 1px solid #d7a309;
+        }
+
+        .method-cfg {
+            background: #ffebec;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .method-noise {
+            background: #e6fcff;
+            color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+
+        .method-smoothing {
+            background: #f1fcde;
+            color: #536e26;
+            border: 1px solid #536e26;
+        }
+
+        /* Table separators */
+        .thick-sep td,
+        .thick-sep th {
+            border-top: 3px solid #333 !important;
+        }
+
+        .logo-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .logo-row img {
+            object-fit: contain;
+        }
+
+        .logo-row img:first-child {
+            height: 110px;
+            margin-left: -40px;
+        }
+
+        .logo-row img:last-child {
+            margin-top: 20px;
+            height: 55px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .logo-row {
+                /* flex-direction: column; */
+                gap: 1rem;
+            }
+
+            .logo-row img:first-child {
+                height: 80px;
+                /* width: 32%; */
+                margin-left: 0px;
+            }
+
+            .logo-row img:last-child {
+                height: 42px;
+                /* width: 25%; */
+                margin-top: 12px;
+            }
+
+        }
+
+        /* Quantitative table outer border and grid */
+        .quant-table {
+            border: 2px solid #333;
+            border-collapse: collapse;
+        }
+
+        .quant-table th,
+        .quant-table td {
+            border: 1px dotted #bbb;
+        }
+
+        /* Baseline Navigation */
+        .baseline-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .baseline-nav button {
+            padding: 0.5rem 0.8rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            white-space: wrap;
+        }
+
+        .baseline-nav button:hover {
+            background: #f0f0f0;
+            border-color: #999;
+        }
+
+        .baseline-nav button.active {
+            color: white;
+            background: #007bff;
+            border-color: #007bff;
+        }
+
+        /* Mode-specific colors */
+        .baseline-nav button[data-baseline="baseline"].active {
+            background: #909090;
+            border-color: #909090;
+        }
+
+        .baseline-nav button[data-baseline="ensemble2"].active {
+            background: #edb409;
+            border-color: #edb409;
+        }
+
+        .baseline-nav button[data-baseline="ensemble5"].active {
+            background: #dc7535;
+            border-color: #dc7535;
+        }
+
+        .baseline-nav button[data-baseline="action-smoothing"].active {
+            background: #536e26;
+            border-color: #536e26;
+        }
+
+        .baseline-nav button[data-baseline="feature-smoothing"].active {
+            background: #134009;
+            border-color: #134009;
+        }
+
+        .baseline-nav button[data-baseline="cfg"].active {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .baseline-nav button[data-baseline="noise"].active {
+            background: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .baseline-content {
+            height: auto;
+        }
+
+        .baseline-item {
+            display: none;
+            height: auto;
+            text-align: center;
+        }
+
+        .baseline-item.active {
+            display: block;
+        }
+
+        .our-method-panel video,
+        .baseline-item video {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .comparison-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .our-method-panel {
+                position: static;
+            }
+
+            .baseline-nav {
+                gap: 0.25rem;
+            }
+
+            .baseline-nav button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Simulation Section Styles */
+        .simulation-section {
+            margin: 0.4rem 0;
+        }
+
+        .simulation-title {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .task-section {
+            margin: 0.3rem 0;
+        }
+
+        .task-title {
+            text-align: center;
+            /* margin-bottom: 2rem; */
+            margin-bottom: 0rem;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .task-comparison {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            /* align-items: flex-start; */
+            align-items: stretch;
+        }
+
+        .comparison-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .comparison-panel video {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dexmg .comparison-panel video {
+            aspect-ratio: 16 / 9;
+        }
+
+        .comparison-panel h4 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .comparison-panel .description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+            text-align: center;
+            margin-top: 0.5rem;
+            /* margin-top: auto; */
+        }
+
+        .baseline-item .description {
+            margin-top: 0.1rem;
+            /* margin-top: auto; */
+        }
+
+        .method-acg {
+            background: #e6f4ff;
+            color: rgb(0, 90, 190);
+            border: 1px solid rgb(0, 90, 190);
+        }
+
+        .method-no-acg {
+            background: #f0f0f0;
+            /* light gray */
+            color: #555555;
+            /* dark gray text */
+            border: 1px solid #9e9e9e;
+            /* gray border */
+        }
+
+        /* Responsive for simulation section */
+        @media screen and (max-width: 768px) {
+            .task-comparison {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            /* .comparison-panel video {
+        height: 250px;
+      } */
+        }
+
+        .custom-footer {
+            padding: 1.5rem 0;
+            background: #fafafa;
+            border-top: 1px solid #e5e5e5;
+            color: #666;
+        }
+
+        @media screen and (max-width: 768px) {
+            .custom-footer {
+                padding: 2rem 0.7rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container" style="margin-top:20px;">
-        <div class="row">
 
-            <div class="col-md-12">
-                <!-- Title and autors -->
-                <center>
-                    <h2 style="margin-top: 20px; margin-bottom: 20px; line-height: 1.2em;">
-                        SphereDiff: Tuning-free Omnidirectional Panoramic Image and Video Generation via Spherical Latent Representation
-                    </h2>
-                    <!-- <h4>Conference name</h4> -->
-                    <!-- author -->
-                    <div class="row author" style="margin-top:18px;">
-                        <div class="col-md-1"></div>
-                        <div class="col-sm-2">
-                            <a href="https://pmh9960.github.io/">Minho Park*</a>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+                <a class="navbar-item" href="https://keh0t0.github.io/">
+                    <span class="icon">
+                        <i class="fas fa-home"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column has-text-centered">
+                        <h1 class="title is-1 publication-title">
+                            <span
+                                style="background: linear-gradient(to right, #4a90e2, #0056b3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">SphereDiff</span>:
+                            Tuning-free 360° Static and Dynamic Panorama Generation via Spherical Latent
+                            Representation
+                        </h1>
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block"><a href="https://pmh9960.github.io/" target="_blank"
+                                    rel="noopener noreferrer">Minho
+                                    Park*</a></span>,
+                            <span class="author-block"><a href="https://keh0t0.github.io/" target="_blank"
+                                    rel="noopener noreferrer">Taewoong
+                                    Kang*</a></span>,
+                            <span class="author-block"><a href="https://yeolj00.github.io/" target="_blank"
+                                    rel="noopener noreferrer">Jooyeol
+                                    Yun</a></span>,
+                            <span class="author-block"><a href="https://deepshwang.github.io/" target="_blank"
+                                    rel="noopener noreferrer">Sungwon
+                                    Hwang</a></span>,
+                            <span class="author-block"><a href="https://sites.google.com/site/jaegulchoo/"
+                                    target="_blank" rel="noopener noreferrer">Jaegul Choo</a></span>
                         </div>
-                        <div class="col-sm-2">
-                            <a href="https://keh0t0.github.io/">Taewoong Kang*</a>
+                        <div class="is-size-6 has-text-centered"
+                            style="margin-top: 0.25rem; margin-bottom: 0.75rem; color: #666;">
+                            * equal contribution
                         </div>
-                        <div class="col-sm-2">
-                            <a href="https://yeolj00.github.io/">Jooyeol Yun</a>
-                        </div>
-                        <div class="col-sm-2">
-                            <a href="https://deepshwang.github.io/">Sungwon Hwang</a>
-                        </div>
-                        <div class="col-sm-2">
-                            <a href="https://sites.google.com/site/jaegulchoo/">Jaegul Choo</a>
-                        </div>
-                        <div class="col-md-1"></div>
-                    </div>
-                    <div class="row author" , style="margin-top:18px; font-size: 20px;">
-                        <div class="col-sm-12">Korea Advanced Institute of Science and Technology (KAIST)</div>
-                    </div>
-                    <div style="margin-top:15px">
-                        <sup style="font-size: 15px">* indicates equal contrubutions.</sup>
-                    </div>
-                </center>
-                <!-- Teaser -->
-                <center>
-                    <figure class="figure">
-                        <video class="figure-img img-fluid" controls style="margin:20px 0px;">
-                            <source src="./assets/spherediff.mp4" type="video/mp4">
-                            360-degree panoramic video generated by SphereDiff. Caption: "Firework, City, Nightscape, Building, River, etc."
-                        </video>
-                        <figcaption class="figure-caption text-justify">
-                            <center>
-                                360-degree panoramic video generated by <em>SphereDiff</em>. Generation Caption is "Firework, City,
-                                Nightscape, Building, River, etc."
-                                <br>
-                                The audio was synthesized via <a href="https://arxiv.org/abs/2412.15322" target="_blank">MMAudio</a>.
-                            </center>
-                        </figcaption>
-                    </figure>
-                </center>
-                <div style="margin-top:15px"></div>
-                <!-- ICONs (arXiv, Code, BibTeX) -->
-                <center>
-                    <div class="row">
-                        <div class="col-sm-3"></div>
-                        <div class="col-sm-3">
-                            <a href="" style="text-decoration: none;color: #000000;"> <!-- TODO: arXiv link -->
-                                <div>
-                                    <img src="../common/figs/icon_arxiv.png" height="40px"></img>
-                                    <h4>arXiv</h4>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-sm-3">
-                            <a href="https://github.com/pmh9960/SphereDiff" style="text-decoration: none;color: #000000;">
-                                <div>
-                                    <img src="../common/figs/icon_github.png" height="40px"></img>
-                                    <h4>Code</h4>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-sm-3"></div>
-                    </div>
-                </center>
-                <hr>
-                <!-- Abstract -->
-                <h3>Abstract</h3>
-                <div>
-                    <p class="lead text-justify">
-                        The increasing demand for AR/VR applications has highlighted the need for high-quality 360-degree panoramic content.
-                        However, generating high-quality 360-degree panoramic images and videos remains a challenging task due to the severe
-                        distortions introduced by equirectangular projection (ERP). Existing approaches either fine-tune pretrained
-                        diffusion models on limited ERP datasets or attempt tuning-free methods that still rely on ERP latent
-                        representations, leading to discontinuities near the poles. In this paper, we introduce SphereDiff, a novel approach
-                        for seamless 360-degree panoramic image and video generation using state-of-the-art diffusion models without
-                        additional tuning. We define a spherical latent representation that ensures uniform distribution across all
-                        perspectives, mitigating the distortions inherent in ERP. We extend MultiDiffusion to spherical latent space and
-                        propose a spherical latent sampling method to enable direct use of pretrained diffusion models. Moreover, we
-                        introduce distortion-aware weighted averaging to further improve the generation quality in the projection process.
-                        Our method outperforms existing approaches in generating 360-degree panoramic content while maintaining high
-                        fidelity, making it a robust solution for immersive AR/VR applications.
-                    </p>
-                </div>
-                <hr>
-                <!-- Motivation -->
-                <h3>Motivation</h3>
-                <div>
-                    <center>
-                        <div class="col-sm-12">
-                            <figure class="figure">
-                                <img src="./assets/motivation.png" class="figure-img img-fluid" alt="Responsive image" style="margin:0px;">
-                                <figcaption class="figure-caption text-justify">
-                                    <center>
-                                        Motivation. Previous finetuning approaches (360 LoRA, PanFusion) often fail to generate continuous
-                                        scenes near the pole due to the limited ERP dataset. The tuning-free approach (DynamicScaler) also
-                                        fails to generate a seamless frame due to the ERP latent representation. However,
-                                        <em>SphereDiff</em>, generates a seamless image.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                    </center>
-                </div>
-                <hr>
-                <!-- Method overview -->
-                <h3>Overall Pipeline</h3>
-                <div>
-                    <center>
-                        <figure class="figure">
-                            <img src="./assets/overall_pipeline.png" class="figure-img img-fluid" alt="Responsive image" style="margin:0px;">
-                            <figcaption class="figure-caption text-justify">
-                                <center>
-                                    We initialize uniform spherical latents and extract perspective latents for multiple views at each
-                                    denoising step using dynamic latent sampling. These latents are then denoised and fused using the
-                                    MultiDiffusion with distortion-aware weighted averaging. This process enables seamless and
-                                    distortion-free 360-degree panoramic image and video generation in a tuning-free manner.
-                                </center>
-                            </figcaption>
-                        </figure>
-                    </center>
-                </div>
-                <hr>
-                <!-- Qualitative results (T2I) -->
-                <h3>Qualitative Results (T2I, SANA, Perspective View)</h3>
-                <div>
-                    <center>
-                        <figure class="figure">
-                            <img src="./assets/quali_t2i.png" class="figure-img img-fluid" alt="Responsive image" style="margin:0px;">
-                            <figcaption class="figure-caption text-justify">
-                                <center>
-                                    Visualization results for the entire scene using the ERP representation and 3 perspectives views across
-                                    various elevation multiple perspective images or frames.
-                                </center>
-                            </figcaption>
-                        </figure>
-                    </center>
-                </div>
-                <hr>
-                <!-- Qualitative results (ERP) -->
-                <h3>Qualitative Results (T2I, SANA, ERP format)</h3>
-                <div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <img src="./assets/qualis_t2i/aurora.png" class="figure-img img-fluid" alt="Responsive image"
-                                    style="margin:0px;">
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Aurora, Lake, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <img src="./assets/qualis_t2i/desert.png" class="figure-img img-fluid" alt="Responsive image"
-                                    style="margin:0px;">
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Desert, Night-sky, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <img src="./assets/qualis_t2i/firework.png" class="figure-img img-fluid" alt="Responsive image"
-                                    style="margin:0px;">
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Firework, city, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <img src="./assets/qualis_t2i/underworld.png" class="figure-img img-fluid" alt="Responsive image"
-                                    style="margin:0px;">
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Underwater, Coral, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <img src="./assets/qualis_t2i/snow_mountain.png" class="figure-img img-fluid" alt="Responsive image"
-                                    style="margin:0px;">
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Snow mountain, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <img src="./assets/qualis_t2i/grand_canyon.png" class="figure-img img-fluid" alt="Responsive image"
-                                    style="margin:0px;">
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Grand Canyon, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <!-- Qualitative results (T2V) -->
-                <h3>Qualitative Results (T2V, LTX-Video, ERP format)</h3>
-                <div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <video class="figure-img img-fluid" controls style="margin:20px 0px 0px 0px;">
-                                    <source src="./assets/qualis_t2v/storm.mp4" type="video/mp4">
-                                </video>
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Storm, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <video class="figure-img img-fluid" controls style="margin:20px 0px 0px 0px;">
-                                    <source src="./assets/qualis_t2v/snow_village.mp4" type="video/mp4">
-                                </video>
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Snow village, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <video class="figure-img img-fluid" controls style="margin:20px 0px 0px 0px;">
-                                    <source src="./assets/qualis_t2v/rock_mountain_with_stars.mp4" type="video/mp4">
-                                </video>
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        Rock mountain with stars, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
-                        </div>
-                        <div class="col-sm-6">
-                            <figure class="figure">
-                                <video class="figure-img img-fluid" controls style="margin:20px 0px 0px 0px;">
-                                    <source src="./assets/qualis_t2v/city.mp4" type="video/mp4">
-                                </video>
-                                <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                    <center>
-                                        City, etc.
-                                    </center>
-                                </figcaption>
-                            </figure>
+                        <div class="is-size-5 publication-authors logo-row">
+                            <img src="static/images/kaist_ai_logo.png" alt="KAIST AI Logo" />
                         </div>
 
-                        <div class="col-sm-3"></div>
-                        <div class="col-sm-6">
-                            <figcaption class="figure-caption text-justify" style="margin:0px;">
-                                <center>
-                                    The audio was synthesized via <a href="https://arxiv.org/abs/2412.15322" target="_blank">MMAudio</a>.
-                                </center>
-                            </figcaption>
+                        <!-- links -->
+                        <div class="column has-text-centered">
+                            <div class="publication-links">
+                                <span class="link-block">
+                                    <p align="center">
+                                        <a href="https://arxiv.org/abs/2504.14396"
+                                            class="external-link button is-normal is-rounded is-dark">
+                                            <span>📄 arXiv</span>
+                                        </a>
+                                        <a href="https://github.com/pmh9960/SphereDiff"
+                                            class="external-link button is-normal is-rounded is-dark">
+                                            <span>💻 Code</span>
+                                        </a>
+                                        <a href="https://pmh9960.github.io/research/SphereDiff"
+                                            class="external-link button is-normal is-rounded is-dark">
+                                            <span>🌐 Project Page</span>
+                                        </a>
+                                    </p>
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-sm-3"></div>
                     </div>
-                    <hr>
-                    <!-- Citation -->
-                    <!-- <div>
-                        <h3>Citation</h3>
-                        <pre><code>@InProceedings{
-}</code></pre>
-                    </div>
-                    <hr> -->
                 </div>
             </div>
         </div>
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script type="text/x-mathjax-config">
-            MathJax.Hub.Config({
-                tex2jax: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] }
+    </section>
+
+    <!-- Teaser Section -->
+    <section class="section" id="method" style="padding-top: 0rem;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-five-sixths">
+                    <!-- <h2 class="title is-3 simulation-title">Teaser</h2> -->
+                    <!-- Navigation Buttons (Outside the comparison boxes) -->
+                    <div class="baseline-group">
+                        <div class="baseline-nav" style="margin-bottom: 1rem;">
+                            <button class="baseline-btn active" data-baseline="storm">Storm</button>
+                            <button class="baseline-btn" data-baseline="volcano">Volcano</button>
+                            <button class="baseline-btn" data-baseline="aurora">Aurora</button>
+                        </div>
+                        <div class="content" style="margin-bottom: 2rem;">
+                            <figure>
+                                <div class="baseline-item active" id="storm">
+                                    <div align="center">
+                                        <video controls muted loop playsinline webkit-playsinline autoplay
+                                            preload="metadata" src="assets/1_hunyuan_storm.mp4" width="100%"
+                                            type="video/mp4"
+                                            style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                        </video>
+                                    </div>
+                                    <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                        <strong>Storm</strong>: Generation Caption is "Storm, Ocean, Storm clouds, White
+                                        foam swirls, etc."
+                                    </figcaption>
+                                </div>
+                                <!-- Volcano -->
+                                <div class="baseline-item" id="volcano">
+                                    <div align="center">
+                                        <video controls muted loop playsinline webkit-playsinline autoplay
+                                            preload="metadata" src="assets/2_hunyuan_volcano.mp4" width="100%"
+                                            type="video/mp4"
+                                            style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                        </video>
+                                    </div>
+                                    <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                        <strong>Volcano</strong>: Generation Caption is "Volcano, magma, ash, lava,
+                                        etc."
+                                    </figcaption>
+                                </div>
+                                <!-- Ensemble 5 -->
+                                <div class="baseline-item" id="aurora">
+                                    <div align="center">
+                                        <video controls muted loop playsinline webkit-playsinline autoplay
+                                            preload="metadata" src="assets/3_hunyuan_aurora.mp4" width="100%"
+                                            type="video/mp4"
+                                            style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                        </video>
+                                    </div>
+                                    <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                        <strong>Aurora</strong>: Generation Caption is "Aurora, Northern lights,
+                                        Northern sky, etc."
+                                    </figcaption>
+                                </div>
+                            </figure>
+                        </div>
+                    </div>
+
+
+                    <!-- <div class="content" style="margin-bottom: 2rem;">
+                        <figure>
+                            <div align="center">
+                                <video controls muted loop playsinline webkit-playsinline autoplay preload="metadata"
+                                    src="./assets/1_hunyuan_storm.mp4" width="100%" type="video/mp4"
+                                    style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                </video>
+                            </div>
+                            <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                360-degree panoramic video generated by <em>SphereDiff</em>. Generation Caption is
+                                "Storm, Ocean, Storm clouds, White foam swirls, etc."
+                                <br>
+                            </figcaption>
+                        </figure>
+                    </div> -->
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Abstract. -->
+    <section class="section" style="padding-top: 0.5rem;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-three-fourths">
+                    <h2 class="title is-3">Abstract</h2>
+                    <div class="content has-text-justified">
+                        <p>
+                            The increasing demand for AR/VR applications has highlighted the need for high-quality
+                            360-degree panoramic content.
+                            However, generating high-quality 360-degree panoramic images and videos remains a
+                            challenging task due to the severe
+                            distortions introduced by equirectangular projection (ERP). Existing approaches either
+                            fine-tune pretrained
+                            diffusion models on limited ERP datasets or attempt tuning-free methods that still rely on
+                            ERP latent
+                            representations, leading to discontinuities near the poles. In this paper, we introduce
+                            SphereDiff, a novel approach
+                            for seamless 360-degree panoramic image and video generation using state-of-the-art
+                            diffusion models without
+                            additional tuning. We define a spherical latent representation that ensures uniform
+                            distribution across all
+                            perspectives, mitigating the distortions inherent in ERP. We extend MultiDiffusion to
+                            spherical latent space and
+                            propose a spherical latent sampling method to enable direct use of pretrained diffusion
+                            models. Moreover, we
+                            introduce distortion-aware weighted averaging to further improve the generation quality in
+                            the projection process.
+                            Our method outperforms existing approaches in generating 360-degree panoramic content while
+                            maintaining high
+                            fidelity, making it a robust solution for immersive AR/VR applications.
+                        </p>
+                    </div>
+                    <!-- Thumbnail Video -->
+                    <div <figure>
+                        <img src="./assets/teaser.png" alt="Conceptual illustration of ACG"
+                            style="height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                        <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                            <strong>SphereDiff enables tuning-free 360° panorama generation via spherical latent. It is
+                                compatible with various diffusion backbones, including <a
+                                    href="https://github.com/black-forest-labs/flux" target="_blank"
+                                    rel="noopener">FLUX</a>, <a href="https://github.com/NVlabs/Sana" target="_blank"
+                                    rel="noopener">SANA</a>, and <a
+                                    href="https://github.com/Tencent-Hunyuan/HunyuanVideo" target="_blank"
+                                    rel="noopener">HunyuanVideo</a>.
+                        </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Motivation Section -->
+    <section class="section" id="method" style="padding-top: 2rem;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-five-sixths">
+                    <h2 class="title is-3 simulation-title">Motivation</h2>
+                    <!-- conceptual overview -->
+                    <div class="content concept-overview" style="margin-bottom: 3rem;">
+                        <figure>
+                            <img src="./assets/motivation.png" alt="Responsive image"
+                                style="height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                            <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                <strong>Motivation.</strong> Previous finetuning approaches (360 LoRA, PanFusion) often
+                                fail
+                                to generate
+                                continuous
+                                scenes near the pole due to the limited ERP dataset. The tuning-free approach
+                                (DynamicScaler) also
+                                fails to generate a seamless frame due to the ERP latent representation. However,
+                                <em>SphereDiff</em>, generates a seamless image.
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Method Section -->
+    <section class="section" id="method" style="padding-top: 2rem;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-five-sixths">
+                    <h2 class="title is-3 simulation-title">Overall Pipeline</h2>
+                    <!-- method -->
+                    <div class="content" style="margin-bottom: 2rem;">
+                        <figure>
+                            <div style="display: inline-block; background-color: #fff; padding: 1rem; border-radius: 10px; 
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0rem 0;">
+                                <img src="./assets/overview.png" alt="Method overview"
+                                    style="display: block; width: 100%; height: auto; border-radius: 8px;" />
+                            </div>
+
+                            <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                We initialize uniform spherical latents and extract perspective latents for multiple
+                                views at each
+                                denoising step using dynamic latent sampling. These latents are then denoised and fused
+                                using the
+                                MultiDiffusion with distortion-aware weighted averaging. This process enables seamless
+                                and
+                                distortion-free 360-degree panoramic image and video generation in a tuning-free manner.
+                            </figcaption>
+                        </figure>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Qualitative Comparison Section -->
+    <section class="section" style="padding-top: 0.5rem;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-five-sixths">
+                    <h2 class="title is-3 comparison-title">Qualitative Comparison</h2>
+                    <!-- <div class="content has-text-centered">
+                        <p class="is-size-5" style="margin-bottom: 2rem; color: #666;">
+                            Visual comparison of different methods on real-world strawberry-picking tasks.<br>
+                            ACG produces smoother and more coherent motions than baselines, resulting in higher success
+                            rates.
+                        </p>
+                    </div> -->
+
+                    <div class="content" style="margin-bottom: 2rem;">
+                        <figure>
+                            <div align="center">
+                                <video controls muted loop playsinline webkit-playsinline autoplay preload="metadata"
+                                    src="./assets/4_qualitative_comparison_live_wallpapers.mp4" width="100%"
+                                    type="video/mp4" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                </video>
+                            </div>
+                            <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
+                                <strong>Qualitative comparison. </strong> Compared to our method, baseline approaches
+                                often struggle to maintain spatial continuity near the
+                                poles, revealing their limitations in achieving seamless 360◦ generation in dynamic
+                                settings.
+                                <br>
+                                <!-- The audio was synthesized via <a href="https://arxiv.org/abs/2412.15322"
+                                    target="_blank">MMAudio</a>. -->
+                            </figcaption>
+                        </figure>
+                    </div>
+
+                    <div class="content has-text-centered">
+                        <p class="is-size-5" style="margin-bottom: 2rem; color: #666;">
+                            <strong>Additional comparison </strong>
+                        </p>
+                    </div>
+
+                    <div class="content" style="margin-bottom: 2rem;">
+                        <figure>
+                            <img src="assets/baseline.png" alt="Quantitative Results"
+                                style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                        </figure>
+                    </div>
+
+                    <div class="content has-text-centered">
+                        <p class="is-size-5" style="margin-bottom: 2rem; color: #666;">
+                            <strong>Additional results </strong>
+                        </p>
+                    </div>
+
+                    <div class="content" style="margin-bottom: 2rem;">
+                        <figure>
+                            <img src="assets/Quali_flux.png" alt="Quantitative Results"
+                                style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quantitative Results -->
+    <section class="section" style="padding-top: 0.5rem;">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-five-sixths">
+                    <h2 class="title is-3 comparison-title">Quantitative Results</h2>
+                    <div class="content has-text-centered">
+                        <p class="is-size-5" style="margin-bottom: 2rem; color: #666;">
+                            <strong>User study results.</strong> The 360◦ static and live wallpapers generated by
+                            SphereDiff have achieved state-of-the-art performance in user preference across most
+                            metrics, particularly in panoramic criteria such as distortion and end continuity.
+                        </p>
+                    </div>
+
+                    <div class="content" style="margin-bottom: 2rem;">
+                        <figure>
+                            <img src="assets/table_1.png" alt="Quantitative Results"
+                                style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                        </figure>
+                    </div>
+                    <div class="content has-text-centered">
+                        <p class="is-size-5" style="margin-bottom: 2rem; color: #666;">
+                            <strong> Automated Quantitative Evaluation.</strong> SphereDiff consistently
+                            outperforms existing methods except image quality, where it ranks second.
+                        </p>
+                    </div>
+
+                    <figure>
+                        <img src="assets/table_2.png" alt="Quantitative Results"
+                            style="width:100%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+                    </figure>
+
+                </div>
+
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Acknowledgement, Footer -->
+    <footer class="footer custom-footer">
+        <div class="content has-text-centered" style="color: #666;">
+            <p style="margin-bottom: 0.5rem;">
+                KAIST AI |
+                <a href="https://arxiv.org/abs/2504.14396" target="_blank" rel="noopener">arXiv</a>
+                &nbsp;·&nbsp;
+                <a href="https://github.com/pmh9960/SphereDiff" target="_blank" rel="noopener">Code</a>
+                &nbsp;·&nbsp;
+                <a href="https://pmh9960.github.io/research/SphereDiff" target="_blank" rel="noopener">Project Page</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function enforceAutoplayLoop(video) {
+            // Play on load
+            if (video.paused) video.play();
+            // Always loop
+            video.addEventListener('ended', function () {
+                video.currentTime = 0;
+                video.play();
             });
-        </script>
-        <script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+            // Prevent seeking to pause only if not paused by user
+            video.addEventListener('seeking', function () {
+                if (!video.paused) video.play();
+            });
+        }
+
+        // 동영상 모두 동일하게 0초에서 시작
+        function syncAllVideos() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(v => {
+                try {
+                    v.currentTime = 0;
+                    v.play();
+                } catch (e) { }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('video').forEach(enforceAutoplayLoop);
+            syncAllVideos();
+        });
+
+        // Observe for dynamically added/replaced videos
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('video').forEach(enforceAutoplayLoop);
+            syncAllVideos();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Baseline comparison functionality
+        function initBaselineComparison() {
+            const groups = document.querySelectorAll('.baseline-group');
+
+            groups.forEach(group => {
+                const buttons = group.querySelectorAll('.baseline-btn');
+                const items = group.querySelectorAll('.baseline-item');
+
+                buttons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const targetBaseline = this.getAttribute('data-baseline');
+
+                        // Remove active class from all buttons and items IN THIS GROUP
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        items.forEach(item => item.classList.remove('active'));
+
+                        // Add active class to clicked button and corresponding item
+                        this.classList.add('active');
+                        const targetItem = document.getElementById(targetBaseline);
+                        if (targetItem) {
+                            targetItem.classList.add('active');
+
+                            // Sync videos when switching
+                            setTimeout(() => {
+                                syncAllVideos();
+                            }, 100);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Initialize baseline comparison when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            initBaselineComparison();
+        });
+    </script>
+
 </body>
 
 </html>
