@@ -7,7 +7,7 @@
         content="SphereDiff: Tuning-free Omnidirectional Panoramic Image and Video Generation via Spherical Latent Representation.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SphereDiff</title>
-    <link rel="icon" type="image/png" href="static/images/fevicon-davian-robotics-64x64.png">
+    <link rel="icon" type="image/png" href="static/images/fevicon-davian.png">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
@@ -213,10 +213,10 @@
             object-fit: contain;
         }
 
-        .logo-row img:first-child {
-            height: 110px;
+        /* .logo-row img:first-child {
+            height: 55px;
             margin-left: -40px;
-        }
+        } */
 
         .logo-row img:last-child {
             margin-top: 20px;
@@ -227,12 +227,6 @@
             .logo-row {
                 /* flex-direction: column; */
                 gap: 1rem;
-            }
-
-            .logo-row img:first-child {
-                height: 80px;
-                /* width: 32%; */
-                margin-left: 0px;
             }
 
             .logo-row img:last-child {
@@ -484,25 +478,6 @@
 
 <body>
 
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-                <a class="navbar-item" href="https://keh0t0.github.io/">
-                    <span class="icon">
-                        <i class="fas fa-home"></i>
-                    </span>
-                </a>
-            </div>
-        </div>
-    </nav>
-
     <section class="hero">
         <div class="hero-body">
             <div class="container is-max-desktop">
@@ -515,8 +490,7 @@
                             Representation
                         </h1>
                         <div class="is-size-5 publication-authors">
-                            <span class="author-block"><a href="https://pmh9960.github.io/" target="_blank"
-                                    rel="noopener noreferrer">Minho
+                            <span class="author-block"><a href="https://pmh9960.github.io/" target="_blank" rel="noopener noreferrer">Minho
                                     Park*</a></span>,
                             <span class="author-block"><a href="https://keh0t0.github.io/" target="_blank"
                                     rel="noopener noreferrer">Taewoong
@@ -527,11 +501,10 @@
                             <span class="author-block"><a href="https://deepshwang.github.io/" target="_blank"
                                     rel="noopener noreferrer">Sungwon
                                     Hwang</a></span>,
-                            <span class="author-block"><a href="https://sites.google.com/site/jaegulchoo/"
-                                    target="_blank" rel="noopener noreferrer">Jaegul Choo</a></span>
+                            <span class="author-block"><a href="https://sites.google.com/site/jaegulchoo/" target="_blank"
+                                    rel="noopener noreferrer">Jaegul Choo</a></span>
                         </div>
-                        <div class="is-size-6 has-text-centered"
-                            style="margin-top: 0.25rem; margin-bottom: 0.75rem; color: #666;">
+                        <div class="is-size-6 has-text-centered" style="margin-top: 0.25rem; margin-bottom: 0.75rem; color: #666;">
                             * equal contribution
                         </div>
                         <div class="is-size-5 publication-authors logo-row">
@@ -582,9 +555,8 @@
                             <figure>
                                 <div class="baseline-item active" id="storm">
                                     <div align="center">
-                                        <video controls muted loop playsinline webkit-playsinline autoplay
-                                            preload="metadata" src="static/videos/1_hunyuan_storm.mp4" width="100%"
-                                            type="video/mp4"
+                                        <video controls muted loop playsinline webkit-playsinline autoplay preload="metadata"
+                                            src="static/videos/1_hunyuan_storm.mp4" width="100%" type="video/mp4"
                                             style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                         </video>
                                     </div>
@@ -596,9 +568,8 @@
                                 <!-- Volcano -->
                                 <div class="baseline-item" id="volcano">
                                     <div align="center">
-                                        <video controls muted loop playsinline webkit-playsinline autoplay
-                                            preload="metadata" src="static/videos/2_hunyuan_volcano.mp4" width="100%"
-                                            type="video/mp4"
+                                        <video controls muted loop playsinline webkit-playsinline autoplay preload="metadata"
+                                            src="static/videos/2_hunyuan_volcano.mp4" width="100%" type="video/mp4"
                                             style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                         </video>
                                     </div>
@@ -610,9 +581,8 @@
                                 <!-- Ensemble 5 -->
                                 <div class="baseline-item" id="aurora">
                                     <div align="center">
-                                        <video controls muted loop playsinline webkit-playsinline autoplay
-                                            preload="metadata" src="static/videos/3_hunyuan_aurora.mp4" width="100%"
-                                            type="video/mp4"
+                                        <video controls muted loop playsinline webkit-playsinline autoplay preload="metadata"
+                                            src="static/videos/3_hunyuan_aurora.mp4" width="100%" type="video/mp4"
                                             style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                         </video>
                                     </div>
@@ -686,12 +656,7 @@
                             style="height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
                         <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
                             <strong>SphereDiff enables tuning-free 360° panorama generation via spherical latent. It is
-                                compatible with various diffusion backbones, including <a
-                                    href="https://github.com/black-forest-labs/flux" target="_blank"
-                                    rel="noopener">FLUX</a>, <a href="https://github.com/NVlabs/Sana" target="_blank"
-                                    rel="noopener">SANA</a>, and <a
-                                    href="https://github.com/Tencent-Hunyuan/HunyuanVideo" target="_blank"
-                                    rel="noopener">HunyuanVideo</a>.
+                                compatible with various diffusion backbones, including FLUX, SANA, and HunyuanVideo.
                         </figcaption>
                         </figure>
                     </div>
@@ -767,20 +732,12 @@
             <div class="columns is-centered">
                 <div class="column is-five-sixths">
                     <h2 class="title is-3 comparison-title">Qualitative Comparison</h2>
-                    <!-- <div class="content has-text-centered">
-                        <p class="is-size-5" style="margin-bottom: 2rem; color: #666;">
-                            Visual comparison of different methods on real-world strawberry-picking tasks.<br>
-                            ACG produces smoother and more coherent motions than baselines, resulting in higher success
-                            rates.
-                        </p>
-                    </div> -->
-
                     <div class="content" style="margin-bottom: 2rem;">
                         <figure>
                             <div align="center">
                                 <video controls muted loop playsinline webkit-playsinline autoplay preload="metadata"
-                                    src="./static/videos/4_qualitative_comparison_live_wallpapers.mp4" width="100%"
-                                    type="video/mp4" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    src="./static/videos/4_qualitative_comparison_live_wallpapers.mp4" width="100%" type="video/mp4"
+                                    style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                 </video>
                             </div>
                             <figcaption class="is-size-6" style="margin-top: 0.5rem; color: #666;">
@@ -789,8 +746,6 @@
                                 poles, revealing their limitations in achieving seamless 360◦ generation in dynamic
                                 settings.
                                 <br>
-                                <!-- The audio was synthesized via <a href="https://arxiv.org/abs/2412.15322"
-                                    target="_blank">MMAudio</a>. -->
                             </figcaption>
                         </figure>
                     </div>
